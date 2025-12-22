@@ -1,0 +1,108 @@
+name: ai_studymate
+description: AI-powered study assistant for students
+
+# Version: major.minor.patch+buildNumber
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # ===== CORE UI =====
+  cupertino_icons: ^1.0.8
+
+  # ===== FIREBASE SERVICES =====
+  # Core Firebase SDK - Required for all Firebase services
+  firebase_core: ^3.8.1
+  # User authentication (email, Google sign-in)
+  firebase_auth: ^5.3.4
+  # Cloud database for notes, flashcards, user data
+  cloud_firestore: ^5.6.0
+  # File storage for PDFs, images, audio
+  firebase_storage: ^12.4.0
+  # Push notifications
+  firebase_messaging: ^15.1.6
+
+  # ===== STATE MANAGEMENT =====
+  # Simple and powerful state management
+  provider: ^6.1.2
+
+  # ===== NETWORKING =====
+  # HTTP client for Laravel API calls
+  dio: ^5.7.0
+
+  # ===== AI & MACHINE LEARNING =====
+  # Google Gemini AI for summarization and flashcards
+  google_generative_ai: ^0.4.6
+  # On-device OCR (text recognition from images)
+  google_mlkit_text_recognition: ^0.14.0
+
+  # ===== SPEECH & AUDIO =====
+  # Convert speech to text
+  speech_to_text: ^7.0.0
+  # Record audio to files
+  record: ^5.2.0
+  # Audio playback
+  audioplayers: ^6.1.0
+
+  # ===== FILE HANDLING =====
+  # Pick images from camera/gallery
+  image_picker: ^1.1.2
+  # Pick files (PDFs, documents)
+  file_picker: ^8.1.6
+  # Get app directories for file storage
+  path_provider: ^2.1.5
+  # PDF text extraction (free community license)
+  syncfusion_flutter_pdf: ^27.2.5
+
+  # ===== NOTIFICATIONS =====
+  # Local scheduled notifications
+  flutter_local_notifications: ^18.0.1
+  # Timezone support for notifications
+  timezone: ^0.9.4
+
+  # ===== UI COMPONENTS =====
+  # Swipeable flashcard widget
+  flutter_card_swiper: ^7.0.1
+  # Google sign-in button and flow
+  google_sign_in: ^6.2.2
+  # Cached network images
+  cached_network_image: ^3.4.1
+
+  # ===== UTILITIES =====
+  # Date/time formatting
+  intl: ^0.19.0
+  # Environment variables (.env file)
+  flutter_dotenv: ^5.2.1
+  # Generate unique IDs
+  uuid: ^4.5.1
+  # URL launcher for external links
+  url_launcher: ^6.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+# Fix for record_linux compatibility with record_platform_interface 1.4.0
+dependency_overrides:
+  record_linux: ^1.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Asset folders - create these folders
+  assets:
+    - assets/images/
+    - assets/icons/
+    - .env
+
+  # Custom fonts (optional - add later)
+  # fonts:
+  #   - family: Poppins
+  #     fonts:
+  #       - asset: assets/fonts/Poppins-Regular.ttf

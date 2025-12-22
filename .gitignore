@@ -1,0 +1,11 @@
+# Markdown files
+*.md
+
+# Documentation folder
+docs/
+
+# Claude-related files
+.claude/
+
+# Windows reserved filename
+nul
