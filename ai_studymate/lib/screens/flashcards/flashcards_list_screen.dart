@@ -36,7 +36,10 @@ class _FlashcardsListScreenState extends State<FlashcardsListScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeProvider();
+    // Initialize provider after build completes to avoid setState during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeProvider();
+    });
   }
 
   void _initializeProvider() {

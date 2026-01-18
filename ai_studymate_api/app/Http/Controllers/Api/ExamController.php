@@ -94,14 +94,10 @@ class ExamController extends Controller
             'reminder_days' => $validated['reminderDays'] ?? [7, 3, 1],
         ]);
 
+        // Return full exam object for Flutter app
         return response()->json([
             'success' => true,
-            'data' => [
-                'id' => $exam->id,
-                'name' => $exam->name,
-                'daysRemaining' => $exam->days_remaining,
-                'message' => 'Exam added successfully. Reminders set.',
-            ],
+            'data' => $exam->fresh(),
         ], 201);
     }
 
@@ -221,7 +217,9 @@ class ExamController extends Controller
     {
         $firebaseUid = $request->input('userId') ?? $request->query('userId');
         if (!$firebaseUid) return null;
-        return User::where('firebase_uid', $firebaseUid)->first();
+
+        // Auto-create user if doesn't exist
+        return $this->getOrCreateUser($firebaseUid, $request);
     }
 
     private function getOrCreateUser(string $firebaseUid, Request $request): User

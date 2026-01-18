@@ -82,6 +82,7 @@ dependencies:
   uuid: ^4.5.1
   # URL launcher for external links
   url_launcher: ^6.3.1
+  shared_preferences: ^2.5.4
 
 dev_dependencies:
   flutter_test:

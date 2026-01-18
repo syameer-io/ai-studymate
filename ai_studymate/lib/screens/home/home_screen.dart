@@ -10,6 +10,8 @@ import '../../providers/auth_provider.dart';
 import '../notes/notes_list_screen.dart';
 import '../flashcards/flashcards_list_screen.dart';
 import '../recorder/voice_recorder_screen.dart';
+import '../exams/exams_list_screen.dart';
+import '../study_plan/study_plan_list_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -177,7 +179,20 @@ class HomeScreen extends StatelessWidget {
               title: 'Exams',
               subtitle: 'Track & Plan',
               color: AppColors.info,
-              onTap: () => _showComingSoon(context, 'Exam Tracker'),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ExamsListScreen()),
+              ),
+            ),
+            _FeatureCard(
+              icon: Icons.calendar_month_outlined,
+              title: 'Study Plan',
+              subtitle: 'Generate & Track',
+              color: AppColors.success,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const StudyPlanListScreen()),
+              ),
             ),
           ],
         ),
@@ -203,7 +218,7 @@ class HomeScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Flashcards Ready!',
+                    'Exam Tracker Ready!',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: AppColors.success,
@@ -211,7 +226,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Features 1-4 complete. Create flashcards from notes or study with AI-generated cards!',
+                    'Features 1-6 complete. Track your exams, manage syllabus topics, and stay organized!',
                     style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 13,
@@ -271,14 +286,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  void _showComingSoon(BuildContext context, String feature) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$feature coming in the next feature batch!'),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
 }
 
 /// Feature card widget

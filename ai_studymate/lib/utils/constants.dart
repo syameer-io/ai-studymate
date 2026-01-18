@@ -102,6 +102,16 @@ class ErrorMessages {
   static const String flashcardContentTooShort = 'Note content is too short to generate flashcards.';
   static const String noFlashcardsGenerated = 'No flashcards could be generated from this content.';
 
+  // Exam errors
+  static const String examNameRequired = 'Please enter an exam name';
+  static const String examSubjectRequired = 'Please enter a subject';
+  static const String examDateRequired = 'Please select an exam date';
+  static const String examLoadFailed = 'Failed to load exams';
+  static const String examSaveFailed = 'Failed to save exam';
+  static const String examDeleteFailed = 'Failed to delete exam';
+  static const String examUpdateFailed = 'Failed to update exam';
+  static const String examNotFound = 'Exam not found';
+
   // Speech/Voice errors
   static const String speechNotAvailable = 'Speech recognition is not available on this device';
   static const String speechPermissionDenied = 'Microphone permission denied. Please enable in settings.';
@@ -130,7 +140,6 @@ class SuccessMessages {
   static const String noteSaved = 'Note saved successfully';
   static const String noteDeleted = 'Note deleted';
   static const String flashcardCreated = 'Flashcard created';
-  static const String examCreated = 'Exam created successfully';
   static const String passwordResetSent = 'Password reset email sent';
   static const String summaryGenerated = 'Summary generated successfully!';
   static const String summaryUpdated = 'Summary updated';
@@ -138,6 +147,13 @@ class SuccessMessages {
   static const String flashcardSaved = 'Flashcard saved';
   static const String flashcardDeleted = 'Flashcard deleted';
   static const String studySessionComplete = 'Great job! Study session complete.';
+
+  // Exam messages
+  static const String examCreated = 'Exam created successfully';
+  static const String examUpdated = 'Exam updated successfully';
+  static const String examDeleted = 'Exam deleted';
+  static const String examMarkedComplete = 'Exam marked as completed';
+  static const String examMarkedIncomplete = 'Exam marked as incomplete';
 
   // Voice recording
   static const String recordingComplete = 'Recording complete';

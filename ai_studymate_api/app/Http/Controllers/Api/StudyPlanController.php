@@ -22,7 +22,14 @@ class StudyPlanController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $user = $this->getUserFromFirebaseUid($request);
+        $firebaseUid = $request->input('userId') ?? $request->query('userId');
+
+        if (!$firebaseUid) {
+            return $this->userNotFoundResponse();
+        }
+
+        // Get or create user
+        $user = $this->getOrCreateUser($firebaseUid, $request);
 
         if (!$user) {
             return $this->userNotFoundResponse();
@@ -95,7 +102,13 @@ class StudyPlanController extends Controller
      */
     public function show(Request $request, string $id): JsonResponse
     {
-        $user = $this->getUserFromFirebaseUid($request);
+        $firebaseUid = $request->input('userId') ?? $request->query('userId');
+
+        if (!$firebaseUid) {
+            return $this->userNotFoundResponse();
+        }
+
+        $user = $this->getOrCreateUser($firebaseUid, $request);
 
         if (!$user) {
             return $this->userNotFoundResponse();
@@ -123,7 +136,13 @@ class StudyPlanController extends Controller
      */
     public function update(Request $request, string $id): JsonResponse
     {
-        $user = $this->getUserFromFirebaseUid($request);
+        $firebaseUid = $request->input('userId') ?? $request->query('userId');
+
+        if (!$firebaseUid) {
+            return $this->userNotFoundResponse();
+        }
+
+        $user = $this->getOrCreateUser($firebaseUid, $request);
 
         if (!$user) {
             return $this->userNotFoundResponse();
@@ -164,7 +183,13 @@ class StudyPlanController extends Controller
      */
     public function destroy(Request $request, string $id): JsonResponse
     {
-        $user = $this->getUserFromFirebaseUid($request);
+        $firebaseUid = $request->input('userId') ?? $request->query('userId');
+
+        if (!$firebaseUid) {
+            return $this->userNotFoundResponse();
+        }
+
+        $user = $this->getOrCreateUser($firebaseUid, $request);
 
         if (!$user) {
             return $this->userNotFoundResponse();
