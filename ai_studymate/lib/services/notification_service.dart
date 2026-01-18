@@ -262,6 +262,55 @@ class NotificationService {
     return true;
   }
 
+  /// Check if exact alarms are permitted (Android 12+)
+  Future<bool> canScheduleExactAlarms() async {
+    if (Platform.isAndroid) {
+      final androidPlugin = _localNotifications
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>();
+
+      if (androidPlugin != null) {
+        try {
+          return await androidPlugin.canScheduleExactNotifications() ?? false;
+        } catch (e) {
+          debugPrint('Error checking exact alarm permission: $e');
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  /// Request exact alarm permission (Android 12+)
+  ///
+  /// On Android 12+, this will open system settings where user can grant permission.
+  /// Returns true if permission is already granted or granted after request.
+  Future<bool> requestExactAlarmPermission() async {
+    if (Platform.isAndroid) {
+      final androidPlugin = _localNotifications
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>();
+
+      if (androidPlugin != null) {
+        try {
+          // Check if already permitted
+          final canSchedule = await androidPlugin.canScheduleExactNotifications();
+          if (canSchedule == true) {
+            return true;
+          }
+
+          // Request permission (opens system settings)
+          final granted = await androidPlugin.requestExactAlarmsPermission();
+          return granted ?? false;
+        } catch (e) {
+          debugPrint('Error requesting exact alarm permission: $e');
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   // ========== EXAM REMINDER METHODS ==========
 
   /// Schedule all reminders for an exam based on reminderDays
@@ -270,25 +319,48 @@ class NotificationService {
   ///
   /// Schedules notifications for each day in exam.reminderDays
   /// (e.g., [7, 3, 1] means 7 days, 3 days, and 1 day before)
-  Future<void> scheduleExamReminders(ExamModel exam) async {
-    if (!_isInitialized) await initialize();
+  ///
+  /// Returns true if successful, false if exact alarm permission is denied.
+  /// Does not throw exceptions - errors are logged but not propagated.
+  Future<bool> scheduleExamReminders(ExamModel exam) async {
+    try {
+      if (!_isInitialized) await initialize();
 
-    // Cancel any existing reminders for this exam first
-    await cancelExamReminders(exam.id);
+      // Check if exact alarms are permitted
+      if (Platform.isAndroid) {
+        final canSchedule = await canScheduleExactAlarms();
+        if (!canSchedule) {
+          debugPrint('Cannot schedule exact alarms - permission not granted');
+          return false;
+        }
+      }
 
-    // Don't schedule reminders for completed or past exams
-    if (exam.isCompleted || exam.isPastDue) {
-      debugPrint('Skipping reminders for exam ${exam.id}: completed or past due');
-      return;
+      // Cancel any existing reminders for this exam first
+      await cancelExamReminders(exam.id);
+
+      // Don't schedule reminders for completed or past exams
+      if (exam.isCompleted || exam.isPastDue) {
+        debugPrint('Skipping reminders for exam ${exam.id}: completed or past due');
+        return true; // Not an error
+      }
+
+      // Schedule a reminder for each reminder day
+      int successCount = 0;
+      for (final daysBeforeExam in exam.reminderDays) {
+        try {
+          await _scheduleExamReminder(exam, daysBeforeExam);
+          successCount++;
+        } catch (e) {
+          debugPrint('Failed to schedule reminder for exam ${exam.id}, day $daysBeforeExam: $e');
+        }
+      }
+
+      debugPrint('Scheduled $successCount/${exam.reminderDays.length} reminders for exam ${exam.id}');
+      return successCount > 0;
+    } catch (e) {
+      debugPrint('Error scheduling exam reminders: $e');
+      return false;
     }
-
-    // Schedule a reminder for each reminder day
-    for (final daysBeforeExam in exam.reminderDays) {
-      await _scheduleExamReminder(exam, daysBeforeExam);
-    }
-
-    debugPrint(
-        'Scheduled ${exam.reminderDays.length} reminders for exam ${exam.id}');
   }
 
   /// Schedule a single exam reminder
@@ -411,9 +483,15 @@ class NotificationService {
   /// Reschedule reminders for an updated exam
   ///
   /// Cancels existing reminders and schedules new ones.
-  Future<void> rescheduleExamReminders(ExamModel exam) async {
-    await cancelExamReminders(exam.id);
-    await scheduleExamReminders(exam);
+  /// Returns true if successful, false if permission is denied.
+  Future<bool> rescheduleExamReminders(ExamModel exam) async {
+    try {
+      await cancelExamReminders(exam.id);
+      return await scheduleExamReminders(exam);
+    } catch (e) {
+      debugPrint('Error rescheduling exam reminders: $e');
+      return false;
+    }
   }
 
   // ========== DAILY STUDY REMINDER ==========

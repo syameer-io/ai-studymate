@@ -166,17 +166,38 @@ class _CreateExamScreenState extends State<CreateExamScreen> {
     if (mounted) {
       if (success) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(_isEditing ? 'Exam updated successfully' : 'Exam created successfully'),
-            backgroundColor: AppColors.success,
-          ),
-        );
+
+        // Check if there's a warning message about notifications
+        if (examProvider.errorMessage != null && examProvider.errorMessage!.contains('notification')) {
+          // Show warning about notifications
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(examProvider.errorMessage!),
+              backgroundColor: Colors.orange,
+              duration: const Duration(seconds: 5),
+              action: SnackBarAction(
+                label: 'OK',
+                textColor: Colors.white,
+                onPressed: () {},
+              ),
+            ),
+          );
+        } else {
+          // Show success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(_isEditing ? 'Exam updated successfully' : 'Exam created successfully'),
+              backgroundColor: AppColors.success,
+            ),
+          );
+        }
       } else {
+        // Show error message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(examProvider.errorMessage ?? 'Failed to save exam'),
             backgroundColor: AppColors.error,
+            duration: const Duration(seconds: 4),
           ),
         );
       }

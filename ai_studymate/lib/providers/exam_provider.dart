@@ -236,8 +236,19 @@ class ExamProvider extends ChangeNotifier {
         _upcomingExams.sort((a, b) => a.examDate.compareTo(b.examDate));
       }
 
-      // Schedule notification reminders for this exam
-      await _notificationService.scheduleExamReminders(savedExam);
+      // Try to schedule notification reminders for this exam
+      // Don't fail exam creation if notifications can't be scheduled
+      try {
+        final notificationSuccess = await _notificationService.scheduleExamReminders(savedExam);
+        if (!notificationSuccess) {
+          debugPrint('Warning: Could not schedule notifications for exam ${savedExam.id}');
+          // Set a warning message but don't fail the operation
+          _errorMessage = 'Exam created but notifications could not be scheduled. Please enable exact alarms in settings.';
+        }
+      } catch (e) {
+        debugPrint('Warning: Notification scheduling failed: $e');
+        _errorMessage = 'Exam created but notifications could not be scheduled.';
+      }
 
       notifyListeners();
       return true;
@@ -285,8 +296,18 @@ class ExamProvider extends ChangeNotifier {
           .toList()
         ..sort((a, b) => a.examDate.compareTo(b.examDate));
 
-      // Reschedule notification reminders for updated exam
-      await _notificationService.rescheduleExamReminders(updatedExam);
+      // Try to reschedule notification reminders for updated exam
+      // Don't fail exam update if notifications can't be scheduled
+      try {
+        final notificationSuccess = await _notificationService.rescheduleExamReminders(updatedExam);
+        if (!notificationSuccess) {
+          debugPrint('Warning: Could not reschedule notifications for exam ${updatedExam.id}');
+          _errorMessage = 'Exam updated but notifications could not be scheduled. Please enable exact alarms in settings.';
+        }
+      } catch (e) {
+        debugPrint('Warning: Notification rescheduling failed: $e');
+        _errorMessage = 'Exam updated but notifications could not be scheduled.';
+      }
 
       notifyListeners();
       return true;
@@ -384,12 +405,17 @@ class ExamProvider extends ChangeNotifier {
         ..sort((a, b) => a.examDate.compareTo(b.examDate));
 
       // Handle notification reminders based on completion status
-      if (updatedExam.isCompleted) {
-        // Cancel reminders if exam is marked complete
-        await _notificationService.cancelExamReminders(examId);
-      } else {
-        // Reschedule reminders if exam is marked incomplete
-        await _notificationService.scheduleExamReminders(updatedExam);
+      try {
+        if (updatedExam.isCompleted) {
+          // Cancel reminders if exam is marked complete
+          await _notificationService.cancelExamReminders(examId);
+        } else {
+          // Reschedule reminders if exam is marked incomplete
+          await _notificationService.scheduleExamReminders(updatedExam);
+        }
+      } catch (e) {
+        debugPrint('Warning: Failed to update notifications: $e');
+        // Don't fail the completion toggle if notifications fail
       }
 
       notifyListeners();

@@ -72,6 +72,8 @@ dependencies:
   google_sign_in: ^6.2.2
   # Cached network images
   cached_network_image: ^3.4.1
+  # Google Fonts for custom typography
+  google_fonts: ^6.2.1
 
   # ===== UTILITIES =====
   # Date/time formatting
